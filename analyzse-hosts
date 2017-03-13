@@ -1,0 +1,61 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+#use JSON;
+#use Data::Dumper;
+
+
+#local $/;
+#open INFILE, "<", "bernds-hosts.json";
+#my $json_text = <INFILE>;
+#my $json_data = decode_json( $json_text );
+
+#print Dumper( $json_data );
+
+#my $hosts = $json_data->{'config'}->{'hosts'};
+#print Dumper( $hosts );
+
+
+
+my %configs;
+
+open INFILE, "<", "bernds-hosts.csv";
+
+while ( my $line = <INFILE> ) {
+
+    chomp $line;
+    #print "$line\n";
+
+    #my @fields = split /;/, $line;
+    #my $host = $fields[0];
+
+    # 'Host Name';'Alias/Description';'Display Name';'Address';'Address6';'Parent Hosts';'Max. Check Attempts';'Check Interval';...
+    my ( $host, $alias, $displayname, $address, $address6, $parenthosts, $restofconfig ) = $line =~ /^'([^']+?)';   # Host Name
+                                                                                                      '([^']+?)';   # Alias
+                                                                                                      '([^']+?)';   # Display Name
+                                                                                                      '([^']+?)';   # Address
+                                                                                                      '([^']+?)';   # Address6
+                                                                                                      '([^']+?)';   # Parent Hosts
+                                                                                                      (.*)$/x;
+    next if $host eq "Host Name";  # Header line
+
+    print $host;
+    print $restofconfig;
+
+    $configs{ $restofconfig }{ "count" }++;
+    push @{ $configs{ $restofconfig }{ "hosts" } }, $host;
+
+}
+
+
+print "---------------------\n";
+foreach my $key ( sort keys %configs ) {
+    print "$key ----";
+    print $configs{ $key }{ "count" };
+    print " (use count) ----\n";
+    print "Hosts: ";
+    print join( ", ", @{ $configs{ $key }{ "hosts" } } );
+    print "----\n";
+}
+print "---------------------\n";
