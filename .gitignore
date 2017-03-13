@@ -1,0 +1,3 @@
+# Don't import data files
+*.json
+*.csv
