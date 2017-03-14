@@ -1,0 +1,55 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Digest::SHA1 qw( sha1 sha1_hex );
+
+
+
+my %configs;
+
+open INFILE, "<", "bernds-services.csv";
+
+while ( my $line = <INFILE> ) {
+
+    chomp $line;
+    #print "$line\n";
+
+    # 'Host';'Description';'Display Name';'Max. Check Attempts';'Normal Check Interval';'Retry Check Interval';'Check Command';'Check Period';'Parallelize';'Volatile';'Obsess Over';'Enable Active Checks';'Enable Passive Checks';'Check Freshness';'Freshness Threshold';'Default Contacts/Groups';'Enable Notifications';'Notification Interval';'First Notification Delay';'Notification Options';'Notification Period';'Event Handler';'Enable Event Handler';'Stalking Options';'Enable Flap Detection';'Low Flap Threshold';'High Flap Threshold';'Flap Detection Options';'Process Performance Data';'Enable Failure Prediction';'Failure Prediction Options';'Notes';'Notes URL';'Action URL';'Logo Image';'Image Alt';'Retention Options'
+    my @fields = split /;/, $line;
+    $fields[32] = "'Notes ersetzt*'";
+
+    my $checkcommand = $fields[6];
+    $checkcommand =~ s/!.*//;  # Strip extra parameter from check_command (remove data from first exclamation mark until end of string)
+    $fields[6] = $checkcommand;
+
+    my $host           = $fields[0];
+    my $service        = $fields[1];
+    my $restofconfig   = join ";", @fields[3..36];
+
+    next if $host eq "'Host'";  # Header line
+
+    my $sha1 = sha1_hex( $restofconfig );
+    #print $host;
+    #print $restofconfig;
+
+    $configs{ $sha1 }{ "count" }++;
+    $configs{ $sha1 }{ "config" } = $restofconfig;
+    push @{ $configs{ $sha1 }{ "services" } }, "$host///$service";  # Concatenate using /// (hopefully isn't used somewhere in real config)
+
+}
+
+
+print "\n\n---------------------\n\n";
+foreach my $key ( sort keys %configs ) {
+    my $config = $configs{ $key }{ "config" };
+    print "Config: $config\n";
+    print "Used by: ";
+    print $configs{ $key }{ "count" };
+    print " hosts/services\n";
+    print "Hosts/Services: ";
+    print join( ", ", @{ $configs{ $key }{ "services" } } );
+    print "\n";
+    print "\n";
+}
+print "---------------------\n";
