@@ -35,15 +35,15 @@ while ( my $line = <INFILE> ) {
     my $host           = $fields[0];
     my $restofconfig   = join ";", @fields[6..40];
 
-    next if $host eq "Host Name";  # Header line
+    next if $host eq "'Host Name'";  # Header line
 
     my $sha1 = sha1_hex( $restofconfig );
-    print $host;
-    print $restofconfig;
+    #print $host;
+    #print $restofconfig;
 
-    $configs{ $restofconfig }{ "count" }++;
-    $configs{ $restofconfig }{ "config" } = $restofconfig;
-    push @{ $configs{ $restofconfig }{ "hosts" } }, $host;
+    $configs{ $sha1 }{ "count" }++;
+    $configs{ $sha1 }{ "config" } = $restofconfig;
+    push @{ $configs{ $sha1 }{ "hosts" } }, $host;
 
 }
 
