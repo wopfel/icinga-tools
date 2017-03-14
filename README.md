@@ -13,7 +13,7 @@ Hosts: 'host1', 'host2', ...
 ```
 
 Steps:
-- In Icinga Classic View, go to Configuration/View Config, select Host (Continue)
+- In Icinga Classic View, go to Configuration/View Config, select Hosts (Continue)
 - Export data using CSV format (upper right corner)
 - Save the file
 - Run perl script (CSV file in same directory)
