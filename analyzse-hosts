@@ -4,6 +4,7 @@ use strict;
 use warnings;
 #use JSON;
 #use Data::Dumper;
+use Digest::SHA1 qw( sha1 sha1_hex );
 
 
 #local $/;
@@ -27,35 +28,36 @@ while ( my $line = <INFILE> ) {
     chomp $line;
     #print "$line\n";
 
-    #my @fields = split /;/, $line;
-    #my $host = $fields[0];
-
     # 'Host Name';'Alias/Description';'Display Name';'Address';'Address6';'Parent Hosts';'Max. Check Attempts';'Check Interval';...
-    my ( $host, $alias, $displayname, $address, $address6, $parenthosts, $restofconfig ) = $line =~ /^'([^']+?)';   # Host Name
-                                                                                                      '([^']+?)';   # Alias
-                                                                                                      '([^']+?)';   # Display Name
-                                                                                                      '([^']+?)';   # Address
-                                                                                                      '([^']+?)';   # Address6
-                                                                                                      '([^']+?)';   # Parent Hosts
-                                                                                                      (.*)$/x;
+    my @fields = split /;/, $line;
+    $fields[31] = "'Notes ersetzt*'";
+
+    my $host           = $fields[0];
+    my $restofconfig   = join ";", @fields[6..40];
+
     next if $host eq "Host Name";  # Header line
 
+    my $sha1 = sha1_hex( $restofconfig );
     print $host;
     print $restofconfig;
 
     $configs{ $restofconfig }{ "count" }++;
+    $configs{ $restofconfig }{ "config" } = $restofconfig;
     push @{ $configs{ $restofconfig }{ "hosts" } }, $host;
 
 }
 
 
-print "---------------------\n";
+print "\n\n---------------------\n\n";
 foreach my $key ( sort keys %configs ) {
-    print "$key ----";
+    my $config = $configs{ $key }{ "config" };
+    print "Config: $config\n";
+    print "Used by: ";
     print $configs{ $key }{ "count" };
-    print " (use count) ----\n";
+    print " hosts\n";
     print "Hosts: ";
     print join( ", ", @{ $configs{ $key }{ "hosts" } } );
-    print "----\n";
+    print "\n";
+    print "\n";
 }
 print "---------------------\n";
