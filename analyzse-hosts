@@ -49,6 +49,11 @@ while ( my $line = <INFILE> ) {
 
 
 print "\n\n---------------------\n\n";
+
+print "Number of distinct configurations: ";
+print ( scalar keys %configs );
+print "\n\n";
+
 foreach my $key ( sort keys %configs ) {
     my $config = $configs{ $key }{ "config" };
     print "Config: $config\n";
