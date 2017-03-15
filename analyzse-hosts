@@ -30,7 +30,7 @@ while ( my $line = <INFILE> ) {
 
     # 'Host Name';'Alias/Description';'Display Name';'Address';'Address6';'Parent Hosts';'Max. Check Attempts';'Check Interval';...
     my @fields = split /;/, $line;
-    $fields[31] = "'Notes ersetzt*'";
+    $fields[31] = "'*Placeholder*'";  # Notes
 
     my $host           = $fields[0];
     my $restofconfig   = join ";", @fields[6..40];

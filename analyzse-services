@@ -17,7 +17,7 @@ while ( my $line = <INFILE> ) {
 
     # 'Host';'Description';'Display Name';'Max. Check Attempts';'Normal Check Interval';'Retry Check Interval';'Check Command';'Check Period';'Parallelize';'Volatile';'Obsess Over';'Enable Active Checks';'Enable Passive Checks';'Check Freshness';'Freshness Threshold';'Default Contacts/Groups';'Enable Notifications';'Notification Interval';'First Notification Delay';'Notification Options';'Notification Period';'Event Handler';'Enable Event Handler';'Stalking Options';'Enable Flap Detection';'Low Flap Threshold';'High Flap Threshold';'Flap Detection Options';'Process Performance Data';'Enable Failure Prediction';'Failure Prediction Options';'Notes';'Notes URL';'Action URL';'Logo Image';'Image Alt';'Retention Options'
     my @fields = split /;/, $line;
-    $fields[32] = "'Notes ersetzt*'";
+    $fields[32] = "'*Placeholder*'";  # Notes
 
     my $checkcommand = $fields[6];
     $checkcommand =~ s/!.*//;  # Strip extra parameter from check_command (remove data from first exclamation mark until end of string)
